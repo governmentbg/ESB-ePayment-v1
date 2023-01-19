@@ -1,0 +1,14 @@
+BROKER SCHEMA ep
+
+
+CREATE COMPUTE MODULE changePaymentStatus_Response
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		CALL overrideDefaultHTTPRequestURL(InputLocalEnvironment,'https://pay-test.egov.bg:44310/api/v1/eService/suspendRequest');
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE overrideDefaultHTTPRequestURL(IN LocalEnvironment REFERENCE, IN newUrl char) BEGIN
+  		SET OutputLocalEnvironment.Destination.HTTP.RequestURL = newUrl;
+	END;
+END MODULE;

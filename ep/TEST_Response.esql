@@ -1,0 +1,246 @@
+BROKER SCHEMA ep
+
+
+
+CREATE COMPUTE MODULE TEST_Response
+	
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+		BEGIN
+		DECLARE i INTEGER 1;
+		DECLARE j INTEGER 1;	
+  		DECLARE k INTEGER 1;
+  		
+  	
+  		CREATE FIELD OutputRoot.JSON.Data.payments IDENTITY(JSON.Array)payments;
+	
+  		FOR source_payment AS InputRoot.JSON.Data.paymentStatuses.*[] DO 
+  		
+  			  			
+  			FOR source_result AS InputRoot.JSON.Data.paymentStatuses.Item[i].result.*[] DO
+		
+				SET OutputRoot.JSON.Data.payments.Item[j].requestId = source_result.paymentrequestID;
+				SET OutputRoot.JSON.Data.payments.Item[j].paymentData.paymentId =source_result.id;
+		
+				DECLARE pattern CHARACTER '#,##0.00;(#,##0.00)';
+				SET OutputRoot.JSON.Data.payments.Item[j].paymentData.amount = CAST(source_result.paymentAmount AS CHARACTER FORMAT pattern);
+	--	SET OutputRoot.JSON.Data.payments.Item[j].paymentData.amount = CAST (source_payment.result.paymentAmount AS DECIMAL FORMAT '#.##');
+
+				SET OutputRoot.JSON.Data.payments.Item[j].paymentData.currency = source_result.currency;
+				SET OutputRoot.JSON.Data.payments.Item[j].paymentData.status = UPPER(source_result.status);
+		
+	    		SET OutputRoot.JSON.Data.payments.Item[j].paymentData.referenceType = source_result.paymentReferenceType;
+        		SET OutputRoot.JSON.Data.payments.Item[j].paymentData.referenceNumber=source_result.paymentReferenceNumber;
+        		SET OutputRoot.JSON.Data.payments.Item[j].paymentData.referenceDate=source_result.paymentReferenceDate;
+        
+        		SET OutputRoot.JSON.Data.payments.Item[j].paymentData.expirationDate=source_result.expirationDate;
+        		SET OutputRoot.JSON.Data.payments.Item[j].paymentData.createDate = source_result.createDate;
+        		SET OutputRoot.JSON.Data.payments.Item[j].paymentData.additionalInformation = source_result.additionalInformation;
+		    --        source_payment.result.statusChangeTime
+				SET OutputRoot.JSON.Data.payments.Item[j].paymentData.typeCode = UPPER (source_result.paymentTypeCode);
+				SET OutputRoot.JSON.Data.payments.Item[j].paymentData.reason = source_result.paymentReason;
+		
+	--	SET OutputRoot.JSON.Data.payments.Item[j].aplicant.uid.type = source_payment.result.applicantUinType;
+	--	SET OutputRoot.JSON.Data.payments.Item[j].aplicant.uid.value=source_payment.result.applicantUin;
+	--	SET OutputRoot.JSON.Data.payments.Item[j].aplicant.name=source_payment.result.applicantName;
+
+		SET OutputRoot.JSON.Data.payments.Item[j].providerInfo.bankAccount.name=source_result.serviceProviderName;
+		SET OutputRoot.JSON.Data.payments.Item[j].providerInfo.bankAccount.bank= source_result.serviceProviderBank;
+		SET OutputRoot.JSON.Data.payments.Item[j].providerInfo.bankAccount.bic =source_result.serviceProviderBIC;
+		SET OutputRoot.JSON.Data.payments.Item[j].providerInfo.bankAccount.iban = source_result.serviceProviderIBAN;
+		
+--		SET OutputRoot.JSON.Data.payments.Item[j].eservice.clientId = source_payment.result.clientId;
+		SET OutputRoot.JSON.Data.payments.Item[j].eserviceAisName=source_result.eserviceClientAisName;
+--		SET OutputRoot.JSON.Data.payments.Item[j].eservice.clientServiceName = source_payment.result.eserviceClientServiceName;
+--		SET OutputRoot.JSON.Data.payments.Item[j].eservice.clientDepartmentId=source_payment.result.eserviceClientDepartmentId;
+		SET j=j+1;
+  		END FOR;
+		
+		SET i=i+1;	
+			
+  		END FOR;
+  		
+	   	SET OutputRoot.JSON.Data.count = InputRoot.JSON.Data.count;
+
+  			--	"source_payment.result.createDate": "2019-02-08T11:20:49.394994",
+             --   "source_payment.result.eserviceClientAisName": "ИС \"Archimed eProcess\", гр. Ловеч",
+            --    "source_payment.result.clientId": null,
+             --   "source_payment.result.eserviceClientServiceName": null,
+            --    "source_payment.result.eserviceClientDepartmentId": "4"
+                
+                
+
+		
+		 ---------------------------------
+		 
+		--  "source_payment.paymentrequestID": 22202,
+        --    "source_payment.result": {
+              --  "id": "19020811", InputRoot.JSON.Data.qData.aisPaymentId; 
+        ----        "source_payment.result.status": "expired",
+        --        "source_payment.result.statusChangeTime": "2019-05-07T12:20:31.1852817",
+				
+             --   "source_payment.result.serviceProviderName": "Еформи", --InputRoot.JSON.Data.actors.*[i].info.bankAccount.name;  
+             --   "source_payment.result.serviceProviderBank": "Банка ДСК", --InputRoot.JSON.Data.actors.*[i].info.bankAccount.bank;
+             --   "source_payment.result.serviceProviderBIC": "STSABGSF", InputRoot.JSON.Data.actors.*[i].info.bankAccount.bic;
+             --   "source_payment.result.serviceProviderIBAN": "BG46TWJI75010823516521", InputRoot.JSON.Data.actors.*[i].info.bankAccount.iban;
+				
+              --  "source_payment.result.currency": "BGN", --InputRoot.JSON.Data.qData.currency;
+             --   "source_payment.result.paymentTypeCode": "paylogin", InputRoot.JSON.Data.qData.typeCode;
+             --   "source_payment.result.paymentAmount": 1.0000, InputRoot.JSON.Data.qData.amount;
+             --   "source_payment.result.paymentReason": "Тестово плащане", InputRoot.JSON.Data.qData.reason;
+               -- "source_payment.result.applicantUinType": "egn", InputRoot.JSON.Data.actors.*[i].uid.type;
+              --  "source_payment.result.applicantUin": "7806277020", InputRoot.JSON.Data.actors.*[i].uid.value;
+              --  "source_payment.result.applicantName": "Страхил  Витков",InputRoot.JSON.Data.actors.*[i].name;
+              --  "source_payment.result.paymentReferenceType": "1", InputRoot.JSON.Data.qData.referenceType;
+             --   "source_payment.result.paymentReferenceNumber": "000001001213", InputRoot.JSON.Data.qData.referenceNumber;
+
+              --  "source_payment.result.paymentReferenceDate": "2019-02-08T00:00:00", InputRoot.JSON.Data.qData.referenceDate;
+              
+			--    "source_payment.result.expirationDate": "2019-03-10T00:00:00", InputRoot.JSON.Data.qData.expirationDate;
+            --    "source_payment.result.additionalInformation": null, InputRoot.JSON.Data.qData.additionalInformation;
+           
+
+
+			--	"source_payment.result.createDate": "2019-02-08T11:20:49.394994",
+             --   "source_payment.result.eserviceClientAisName": "ИС \"Archimed eProcess\", гр. Ловеч",
+             ----   "source_payment.result.clientId": null,
+            --    "source_payment.result.eserviceClientServiceName": null,
+            --    "source_payment.result.eserviceClientDepartmentId": "4"
+		 ---------------------------------
+	
+  		/*
+ 	 		CASE i
+ 	--		WHEN 1 THEN	
+	--			SET OutputRoot.JSON.Data.payments.Item[j].aisPaymentId = InputRoot.JSON.Data.payments.item.aisPaymentId[j];
+  	--			SET i=i+1;
+     		WHEN 1 THEN
+				SET OutputRoot.JSON.Data.payments.Item[j].currency = InputRoot.JSON.Data.payments.currency[j];
+  				SET i=i+1;
+			WHEN 2 THEN
+				SET OutputRoot.JSON.Data.payments.Item[j].amount = InputRoot.JSON.Data.payments.amount[j];
+				--SET i=i+1;
+				SET i=1;
+				SET j= j+1;*/	/*
+			WHEN 4 THEN
+				SET OutputRoot.JSON.Data.payments.Item[j].typeCode = InputRoot.JSON.Data.payments.typeCode[j];
+				SET i=i+1;
+			WHEN 5 THEN
+				SET OutputRoot.JSON.Data.payments.Item[j].reason = InputRoot.JSON.Data.payments.reason[j];
+				SET i=i+1;
+			WHEN 6 THEN
+				SET OutputRoot.JSON.Data.payments.Item[j].referenceNumber = InputRoot.JSON.Data.payments.referenceNumber[j];
+				SET i=i+1;
+			WHEN 7 THEN
+				SET OutputRoot.JSON.Data.payments.Item[j].referenceType = InputRoot.JSON.Data.payments.referenceType[j];
+				SET i=i+1;
+			WHEN 8 THEN
+				SET OutputRoot.JSON.Data.payments.Item[j].referenceDate = InputRoot.JSON.Data.payments.referenceDate[j];
+				SET i=i+1;
+			WHEN 9 THEN
+				SET OutputRoot.JSON.Data.payments.Item[j].expirationDate = InputRoot.JSON.Data.payments.expirationDate[j];
+				SET i=i+1;
+			WHEN 10 THEN
+				SET OutputRoot.JSON.Data.payments.Item[j].additionalInformation = InputRoot.JSON.Data.payments.additionalInformation[j];
+				SET i=i+1;
+			WHEN 11 THEN
+				SET OutputRoot.JSON.Data.payments.Item[j].administrativeServiceUri = InputRoot.JSON.Data.payments.administrativeServiceUri[j];
+				SET i=i+1;
+			WHEN 12 THEN
+				SET OutputRoot.JSON.Data.payments.Item[j].administrativeServiceSupplierUri = InputRoot.JSON.Data.payments.administrativeServiceSupplierUri[j];
+				SET i=i+1;
+			WHEN 13 THEN
+				SET OutputRoot.JSON.Data.payments.Item[j].administrativeServiceNotificationURL = InputRoot.JSON.Data.payments.administrativeServiceNotificationURL[j];
+				SET i=i+1;
+			WHEN 14 THEN
+				SET OutputRoot.JSON.Data.payments.Item[j].paymentStatus = InputRoot.JSON.Data.payments.paymentStatus[j];
+				SET i=i+1;
+			WHEN 15 THEN
+				SET OutputRoot.JSON.Data.payments.Item[j].receiver = InputRoot.JSON.Data.payments.receiver[j];
+				SET i=1;
+				SET j=j+1;
+				*/
+ --		END CASE;
+
+
+  /*			
+  		SET OutputRoot.JSON.Data.payments.item[i].aisPaymentId = InputRoot.JSON.Data.payments.item[i].aisPaymentId; 
+		SET OutputRoot.JSON.Data.payments.item[i].currency = InputRoot.JSON.Data.payments.item[i].currency;
+		SET OutputRoot.JSON.Data.payments.item[i].amount = InputRoot.JSON.Data.payments.item[i].amount;
+		SET OutputRoot.JSON.Data.payments.item[i].typeCode = InputRoot.JSON.Data.payments.item[i].typeCode;
+		SET OutputRoot.JSON.Data.payments.item[i].reason = InputRoot.JSON.Data.payments.item[i].reason;
+		SET OutputRoot.JSON.Data.payments.item[i].referenceNumber = InputRoot.JSON.Data.payments.item[i].referenceNumber;
+		SET OutputRoot.JSON.Data.payments.item[i].referenceType = InputRoot.JSON.Data.payments.item[i].referenceType;
+		SET OutputRoot.JSON.Data.payments.item[i].referenceDate = InputRoot.JSON.Data.payments.item[i].referenceDate;
+		SET OutputRoot.JSON.Data.payments.item[i].expirationDate = InputRoot.JSON.Data.payments.item[i].expirationDate;
+		SET OutputRoot.JSON.Data.payments.item[i].additionalInformation = InputRoot.JSON.Data.payments.item[i].additionalInformation;
+		SET OutputRoot.JSON.Data.payments.item[i].administrativeServiceUri = InputRoot.JSON.Data.payments.item[i].administrativeServiceUri;
+		SET OutputRoot.JSON.Data.payments.item[i].administrativeServiceSupplierUri = InputRoot.JSON.Data.payments.item[i].administrativeServiceSupplierUri;
+		SET OutputRoot.JSON.Data.payments.item[i].administrativeServiceNotificationURL = InputRoot.JSON.Data.payments.item[i].administrativeServiceNotificationURL;
+		SET OutputRoot.JSON.Data.payments.item[i].paymentStatus = InputRoot.JSON.Data.payments.item[i].paymentStatus;
+		SET OutputRoot.JSON.Data.payments.item[i].receiver = InputRoot.JSON.Data.payments.item[i].receiver;
+	*/		
+	/*
+		Data
+	paymentStatuses
+			Item
+					paymentrequestID:INTEGER:22202
+					result
+							id:CHARACTER:19020811
+							status:CHARACTER:expired
+							statusChangeTime:CHARACTER:2019-05-07T12:20:31.1852817
+							serviceProviderName:CHARACTER:Еформи
+							serviceProviderBank:CHARACTER:Банка ДСК
+							serviceProviderBIC:CHARACTER:STSABGSF
+							serviceProviderIBAN:CHARACTER:BG46TWJI75010823516521
+							currency:CHARACTER:BGN
+							paymentTypeCode:CHARACTER:paylogin
+							paymentAmount:FLOAT:1.0
+							paymentReason:CHARACTER:Тестово плащане
+							applicantUinType:CHARACTER:egn
+							applicantUin:CHARACTER:7806277020
+							applicantName:CHARACTER:Страхил  Витков
+							paymentReferenceType:CHARACTER:1
+							paymentReferenceNumber:CHARACTER:000001001213
+							paymentReferenceDate:CHARACTER:2019-02-08T00:00:00
+							expirationDate:CHARACTER:2019-03-10T00:00:00
+							additionalInformation:NULL:null
+							createDate:CHARACTER:2019-02-08T11:20:49.394994
+							eserviceClientAisName:CHARACTER:ИС "Archimed eProcess", гр. Ловеч
+							clientId:NULL:null
+							eserviceClientServiceName:NULL:null
+							eserviceClientDepartmentId:CHARACTER:4
+			Item
+					paymentrequestID:INTEGER:40070
+					result
+							id:CHARACTER:20062386
+							status:CHARACTER:authorized
+							statusChangeTime:CHARACTER:2020-06-23T15:37:43.0642842
+							serviceProviderName:CHARACTER:Агенция по геодезия, картография и кадастър
+							serviceProviderBank:CHARACTER:Българска народна банка
+							serviceProviderBIC:CHARACTER:BNBGBGSD
+							serviceProviderIBAN:CHARACTER:BG13BNBG96613100110401
+							currency:CHARACTER:BGN
+							paymentTypeCode:CHARACTER:1
+							paymentAmount:FLOAT:14.0
+							paymentReason:CHARACTER:Плащане на заявление 01-263194-23.06.2020 с цена 14,00 лв. и сума за плащане:  14,00 лв. КНИК: 785967.
+							applicantUinType:CHARACTER:egn
+							applicantUin:CHARACTER:7806277020
+							applicantName:CHARACTER:СТРАХИЛ АЛЕКСАНДРОВ ВИТКОВ
+							paymentReferenceType:CHARACTER:1
+							paymentReferenceNumber:CHARACTER:1068645
+							paymentReferenceDate:CHARACTER:2020-06-23T00:00:00
+							expirationDate:CHARACTER:2020-06-26T15:35:30.0837031
+							additionalInformation:NULL:null
+							createDate:CHARACTER:2020-06-23T15:35:48.1813381
+							eserviceClientAisName:CHARACTER:ИС "Е-Форми - Агенция по геодезия, картография и кадастър"
+							clientId:NULL:null
+							eserviceClientServiceName:NULL:null
+							eserviceClientDepartmentId:CHARACTER:1031
+
+  	--	END FOR;
+	
+		*/
+		RETURN TRUE;
+	END;
+
+END MODULE;

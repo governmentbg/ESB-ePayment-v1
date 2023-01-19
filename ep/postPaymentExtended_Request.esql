@@ -1,0 +1,86 @@
+BROKER SCHEMA ep
+
+
+
+
+CREATE COMPUTE MODULE postPaymentExtended_Request
+	DECLARE ePaymentBaseURL EXTERNAL CHARACTER '';
+			
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+	DECLARE i INTEGER 1;
+	
+		SET OutputLocalEnvironment.Variables = InputLocalEnvironment.Variables;
+		
+		-- IF InputLocalEnvironment.Variables.DpMiscinfo.correspondentOID IS NULL THEN
+		
+		SET OutputLocalEnvironment.Variables.ePayment.eServiceClientID = InputRoot.HTTPInputHeader."Service-Cid";
+		--	SET OutputLocalEnvironment.Variables.ePayment.eServiceClientID = InputLocalEnvironment.HTTP.Input.QueryString.aisClientId;
+		-- ELSE
+		--	SET OutputLocalEnvironment.Variables.ePayment.eServiceClientID = InputLocalEnvironment.Variables.DpMiscinfo.correspondentOID;
+		-- END IF;	
+		
+					
+		SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL || '/paymentJsonExtended';
+
+		SET OutputRoot.JSON.Data.additionalInformation = InputRoot.JSON.Data.paymentData.additionalInformation;
+		SET OutputRoot.JSON.Data.administrativeServiceNotificationURL = InputRoot.JSON.Data.paymentData.administrativeServiceNotificationURL;
+		SET OutputRoot.JSON.Data.administrativeServiceSupplierUri = InputRoot.JSON.Data.paymentData.administrativeServiceSupplierUri;
+		SET OutputRoot.JSON.Data.administrativeServiceUri = InputRoot.JSON.Data.paymentData.administrativeServiceUri;
+		SET OutputRoot.JSON.Data.administrativeServiceSupplierUri = InputRoot.JSON.Data.paymentData.administrativeServiceSupplierUri;
+		
+		SET OutputRoot.JSON.Data.aisPaymentId = InputRoot.JSON.Data.paymentData.paymentId; 
+		
+		FOR source AS InputRoot.JSON.Data.actors.*[] DO
+				CASE UPPER(InputRoot.JSON.Data.actors.*[i].participantType)
+		  		WHEN 'APPLICANT' THEN
+		  			SET OutputRoot.JSON.Data.applicantName =InputRoot.JSON.Data.actors.*[i].name;
+		  			SET OutputRoot.JSON.Data.applicantUin = InputRoot.JSON.Data.actors.*[i].uid.value;
+					SET OutputRoot.JSON.Data.applicantUinTypeId = InputRoot.JSON.Data.actors.*[i].uid.type; 
+			--	WHEN 'AISCLIENTID' THEN
+			--		IF InputRoot.JSON.Data.actors.*[i].uid.type = 'AISCLIENTID' THEN
+					-- SET OutputRoot.JSON.Data.applicantName =InputRoot.JSON.Data.actors.*[i].name;
+		  	--		SET OutputLocalEnvironment.Variables.ePayment.eServiceClientID  = InputRoot.JSON.Data.actors.*[i].uid.value;
+					-- SET OutputRoot.JSON.Data.applicantUinTypeId = InputRoot.JSON.Data.actors.*[i].uid.type; 
+			--		END IF;
+					
+				END CASE;
+				SET i=i+1;
+		END FOR;
+		
+		SET OutputRoot.JSON.Data.currency = InputRoot.JSON.Data.paymentData.currency;
+		SET OutputRoot.JSON.Data.expirationDate = InputRoot.JSON.Data.paymentData.expirationDate;	
+		SET OutputRoot.JSON.Data.paymentAmount = InputRoot.JSON.Data.paymentData.amount;
+		SET OutputRoot.JSON.Data.paymentReason = InputRoot.JSON.Data.paymentData.reason;
+		SET OutputRoot.JSON.Data.paymentReferenceDate = InputRoot.JSON.Data.paymentData.referenceDate;
+		SET OutputRoot.JSON.Data.paymentReferenceNumber = InputRoot.JSON.Data.paymentData.referenceNumber;
+		SET OutputRoot.JSON.Data.paymentReferenceType = InputRoot.JSON.Data.paymentData.referenceType;
+		SET OutputRoot.JSON.Data.paymentTypeCode = InputRoot.JSON.Data.paymentData.typeCode;
+
+
+/*
+		SET OutputRoot.JSON.Data.additionalInformation='Тест';
+--		SET OutputRoot.JSON.Data.administrativeServiceNotificationURL='null';
+--		SET OutputRoot.JSON.Data.administrativeServiceSupplierUri='null';
+--		SET OutputRoot.JSON.Data.administrativeServiceUri='null';
+--		SET OutputRoot.JSON.Data.aisPaymentId='null';
+		SET OutputRoot.JSON.Data.applicantName='Тест';
+		SET OutputRoot.JSON.Data.applicantUin='7005286939';
+		SET OutputRoot.JSON.Data.applicantUinTypeId='EGN';
+		SET OutputRoot.JSON.Data.currency='BGN';
+		SET OutputRoot.JSON.Data.expirationDate='2022-04-24';
+		SET OutputRoot.JSON.Data.paymentAmount='5.0';
+		SET OutputRoot.JSON.Data.paymentReason='Тестово плащане';
+		SET OutputRoot.JSON.Data.paymentReferenceDate='2022-04-19';
+--		SET OutputRoot.JSON.Data.paymentReferenceNumber='null';
+		SET OutputRoot.JSON.Data.paymentReferenceType=' ';
+		SET OutputRoot.JSON.Data.paymentTypeCode='0';
+		SET OutputRoot.JSON.Data.serviceProviderBIC='STSABGSF';
+		SET OutputRoot.JSON.Data.serviceProviderBank='Банка ДСК';
+		SET OutputRoot.JSON.Data.serviceProviderIBAN='BG29STSA93000004959760';
+		SET OutputRoot.JSON.Data.serviceProviderName='Тест Община Луковит';
+*/
+		RETURN TRUE;
+	END;
+
+END MODULE;

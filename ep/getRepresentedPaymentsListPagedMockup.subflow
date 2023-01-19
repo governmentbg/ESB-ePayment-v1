@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCallableFlowInvoke.msgnode="ComIbmCallableFlowInvoke.msgnode" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmDatabaseRetrieve.msgnode="ComIbmDatabaseRetrieve.msgnode" xmlns:ComIbmThrow.msgnode="ComIbmThrow.msgnode" xmlns:ComIbmTrace.msgnode="ComIbmTrace.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility"
+    nsURI="ep/getRepresentedPaymentsListPagedMockup.subflow" nsPrefix="ep_getRepresentedPaymentsListPagedMockup.subflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1" useDefaults="true" udpSupport="true">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <translation xmi:type="utility:TranslatableString" key="getRepresentedPaymentsListPagedMockup" bundleName="ep/getRepresentedPaymentsListPagedMockup" pluginId="DAEU_ePayment"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/DAEU_ePayment/icons/full/obj16/getRepresentedPaymentsListPagedMockup.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/DAEU_ePayment/icons/full/obj30/getRepresentedPaymentsListPagedMockup.gif"/>
+    <composition>
+      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input" location="24,36">
+        <translation xmi:type="utility:TranslatableString" key="InTerminal.Input" bundleName="ep/getRepresentedPaymentsListPagedMockup" pluginId="DAEU_ePayment"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="828,97">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Output" bundleName="ep/getRepresentedPaymentsListPagedMockup" pluginId="DAEU_ePayment"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="301,40" computeExpression="esql://routine/ep#getRepresentedPaymentsListPaged_Request.Main" computeMode="destinationAndMessage">
+        <translation xmi:type="utility:ConstantString" string="Request"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="644,113" computeExpression="esql://routine/ep#getRepresentedPaymentsListPaged_Response.Main" computeMode="destinationAndMessage">
+        <translation xmi:type="utility:ConstantString" string="Response"/>
+      </nodes>
+      <nodes xmi:type="ComIbmTrace.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_4" location="743,11">
+        <translation xmi:type="utility:ConstantString" string="Trace"/>
+      </nodes>
+      <nodes xmi:type="ComIbmThrow.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_5" location="896,7">
+        <translation xmi:type="utility:ConstantString" string="Throw"/>
+      </nodes>
+      <nodes xmi:type="ComIbmDatabaseRetrieve.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_6" location="383,43" dataSourceName="{DB2Policy_HostsMap}:DB2_LINUX" copyMessage="true" allRows="true" sqlQuery="SELECT DUMMY.GET_REPRESENTED_PAYMENTS_LIST_PAGED_REQUEST.RESPONSE_FK, DUMMY.PAYMENT.CURRENCY, DUMMY.PAYMENT.AMOUNT&#xA;FROM DUMMY.GET_REPRESENTED_PAYMENTS_LIST_PAGED_REQUEST, DUMMY.PAYMENT&#xA;WHERE DUMMY.GET_REPRESENTED_PAYMENTS_LIST_PAGED_REQUEST.PAYMENT_TYPE = ?&#xA;AND DUMMY.GET_REPRESENTED_PAYMENTS_LIST_PAGED_REQUEST.SYSTEM_OID = ?&#xA;AND DUMMY.GET_REPRESENTED_PAYMENTS_LIST_PAGED_REQUEST.REPRESENTATIVE_ID = ?&#xA;AND DUMMY.PAYMENT.RESPONSE_FK = DUMMY.GET_REPRESENTED_PAYMENTS_LIST_PAGED_REQUEST.RESPONSE_FK&#xA;ORDER BY DUMMY.GET_REPRESENTED_PAYMENTS_LIST_PAGED_REQUEST.RESPONSE_FK ASC, DUMMY.PAYMENT.CURRENCY ASC, DUMMY.PAYMENT.AMOUNT ASC"
+          tableNameComboValues="0,0,0,0,2,2,2,0,0~DUMMY.GET_REPRESENTED_PAYMENTS_LIST_PAGED_REQUEST,DUMMY.GET_REPRESENTED_PAYMENTS_LIST_PAGED_RESPONSE,DUMMY.PAYMENT" columnNameComboValues="3,7,4,5,5,1,0,0,0~AMOUNT,CURRENCY,ID,PAYMENT_TYPE,REPRESENTATIVE_ID,RESPONSE_FK,RESPONSE_KK,SYSTEM_OID" operatorComboValues="2,2,2,0,2,0,0,0,0~ASC" valueTypeComboValues="2,2,2,0,1,0,0,0,0~None" columnValueComboValues="3,2~DUMMY.PAYMENT.ID">
+        <translation xmi:type="utility:ConstantString" string="DBGet_representedPaymentListPaged"/>
+        <queryElements tableName="DUMMY.GET_REPRESENTED_PAYMENTS_LIST_PAGED_REQUEST" columnName="PAYMENT_TYPE" operator="=" valueType="Element" value="$InputLocalEnvironment/Variables/paymentType"/>
+        <queryElements tableName="DUMMY.GET_REPRESENTED_PAYMENTS_LIST_PAGED_REQUEST" columnName="SYSTEM_OID" operator="=" valueType="Element" value="$InputLocalEnvironment/Variables/systemOID"/>
+        <queryElements tableName="DUMMY.GET_REPRESENTED_PAYMENTS_LIST_PAGED_REQUEST" columnName="REPRESENTATIVE_ID" operator="=" valueType="Element" value="$InputLocalEnvironment/Variables/representedPersonID"/>
+        <queryElements tableName="DUMMY.GET_REPRESENTED_PAYMENTS_LIST_PAGED_REQUEST" columnName="RESPONSE_FK" operator="ASC" valueType="None" value="None"/>
+        <queryElements tableName="DUMMY.PAYMENT" columnName="RESPONSE_FK" operator="=" valueType="Column" value="DUMMY.GET_REPRESENTED_PAYMENTS_LIST_PAGED_REQUEST.RESPONSE_FK"/>
+        <queryElements tableName="DUMMY.PAYMENT" columnName="CURRENCY" operator="ASC" valueType="None" value="None"/>
+        <queryElements tableName="DUMMY.PAYMENT" columnName="AMOUNT" operator="ASC" valueType="None" value="None"/>
+        <dataElements columnName="DUMMY.PAYMENT.CURRENCY" messageElement="$OutputRoot/JSON/Data/payments/currency"/>
+        <dataElements columnName="DUMMY.PAYMENT.AMOUNT" messageElement="$OutputRoot/JSON/Data/payments/amount"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCallableFlowInvoke.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="142,38" targetApplication="CF_ePayment" targetEndpointName="epConfig">
+        <translation xmi:type="utility:ConstantString" string="CallableFlowInvoke"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="OutTerminal.Output" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_6" targetNode="FCMComposite_1_5" sourceNode="FCMComposite_1_4" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="FCMComposite_1_6" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_5" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_7" targetNode="FCMComposite_1_4" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_8" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.keyNotFound" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_3" sourceNode="InTerminal.Input" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_9" targetNode="FCMComposite_1_1" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+    </composition>
+    <propertyOrganizer/>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>

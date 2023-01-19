@@ -1,0 +1,27 @@
+BROKER SCHEMA ep
+
+
+CREATE COMPUTE MODULE setStatusPaid_Request
+	DECLARE ePaymentBaseURL EXTERNAL CHARACTER '';
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputLocalEnvironment.Variables=InputLocalEnvironment.Variables;
+		
+		SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL||'/setStatusPaid';
+				
+		SET OutputRoot.JSON.Data.id=InputRoot.JSON.Data.paymentId;
+		
+		CASE InputRoot.JSON.Data.method
+  			WHEN 'CASE' THEN
+    			SET OutputRoot.JSON.Data.paymentMethod='2';
+  			WHEN 'OTHER' THEN
+    			SET OutputRoot.JSON.Data.paymentMethod='1';      
+ 		END CASE;
+		
+		SET OutputRoot.JSON.Data.paymentDescription=InputRoot.JSON.Data.description;
+		RETURN TRUE;
+		
+	END;
+
+END MODULE;

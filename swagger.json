@@ -1,0 +1,886 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "title" : "DAEU_ePayment",
+    "version" : "1.0.0",
+    "description" : "DAEU_ePayment"
+  },
+  "basePath" : "/ep/connector/v1",
+  "schemes" : [ "https" ],
+  "tags" : [ {
+    "name" : "eDelivery",
+    "description" : "All translations to eDelivery"
+  }, {
+    "name" : "ePayment",
+    "description" : "All translations to ePayment"
+  }, {
+    "name" : "statistics",
+    "description" : "Functionality providing common statistics"
+  }, {
+    "name" : "dummy",
+    "description" : "Functionality providing dummy data without system implementation"
+  } ],
+  "paths" : {
+    "/registerPayment" : {
+      "post" : {
+        "operationId" : "postRegisterPayment",
+        "description" : "Invoke paymentJson resource (ePayment)",
+        "tags" : [ "ePayment" ],
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/authorisationParam"
+        }, {
+          "name" : "body",
+          "in" : "body",
+          "schema" : {
+            "$ref" : "#/definitions/RegisterPaymentRequest"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The operation was successful",
+            "schema" : {
+              "$ref" : "#/definitions/RegisterPaymentResponse"
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "schema" : {
+              "$ref" : "#/definitions/CommonException"
+            }
+          },
+          "500" : {
+            "description" : "Error in processing the request",
+            "schema" : {
+              "$ref" : "#/definitions/ProcessingException"
+            }
+          }
+        }
+      }
+    },
+    "/getPaymentStatus" : {
+      "get" : {
+        "operationId" : "getPostPaymentStatus",
+        "description" : "Invoke paymentsStatus resource (ePayment)",
+        "tags" : [ "ePayment" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/authorisationParam"
+        }, {
+          "name" : "paymentId",
+          "in" : "query",
+          "type" : "string",
+          "required" : false
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The operation was successful",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentStatusResponse"
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "schema" : {
+              "$ref" : "#/definitions/CommonException"
+            }
+          },
+          "500" : {
+            "description" : "Error in processing the request",
+            "schema" : {
+              "$ref" : "#/definitions/ProcessingException"
+            }
+          }
+        }
+      }
+    },
+    "/getAccessCode" : {
+      "get" : {
+        "operationId" : "getAccessCode",
+        "description" : "Invoke accessCode resource (ePayment)",
+        "tags" : [ "ePayment" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/authorisationParam"
+        }, {
+          "name" : "paymentId",
+          "in" : "query",
+          "type" : "string",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The operation was successful",
+            "schema" : {
+              "$ref" : "#/definitions/AccessCodeResponse"
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "schema" : {
+              "$ref" : "#/definitions/CommonException"
+            }
+          },
+          "500" : {
+            "description" : "Error in processing the request",
+            "schema" : {
+              "$ref" : "#/definitions/ProcessingException"
+            }
+          }
+        }
+      }
+    },
+    "/getPaymentDetails" : {
+      "get" : {
+        "operationId" : "getPostPaymentDetails",
+        "description" : "Invoke paymentsByIdJson resource (ePayment)",
+        "tags" : [ "ePayment" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/authorisationParam"
+        }, {
+          "name" : "paymentId",
+          "in" : "query",
+          "type" : "string",
+          "required" : false
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The operation was successful",
+            "schema" : {
+              "$ref" : "#/definitions/RegisterPaymentRequest"
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "schema" : {
+              "$ref" : "#/definitions/CommonException"
+            }
+          },
+          "500" : {
+            "description" : "Error in processing the request",
+            "schema" : {
+              "$ref" : "#/definitions/ProcessingException"
+            }
+          }
+        }
+      }
+    },
+    "/changePaymentStatus" : {
+      "put" : {
+        "operationId" : "putPostChangePaymentStatus",
+        "description" : "Invoke setStatusPaid or suspendRequest resources (ePayment)",
+        "tags" : [ "ePayment" ],
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/authorisationParam"
+        }, {
+          "name" : "body",
+          "in" : "body",
+          "schema" : {
+            "$ref" : "#/definitions/ChangePaymentStatusRequest"
+          },
+          "description" : "",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The operation was successful",
+            "schema" : {
+              "$ref" : "#/definitions/RegisterPaymentResponse"
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "schema" : {
+              "$ref" : "#/definitions/CommonException"
+            }
+          },
+          "500" : {
+            "description" : "Error in processing the request",
+            "schema" : {
+              "$ref" : "#/definitions/ProcessingException"
+            }
+          }
+        }
+      }
+    },
+    "/getRepresentedPaymentsListPaged" : {
+      "get" : {
+        "operationId" : "getRepresentedPaymentsListPaged",
+        "description" : "Invoke paymentJson resource (ePayment) Mock operation RepresentedPaymentsListPaged (ePayment)",
+        "tags" : [ "ePayment" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/authorisationParam"
+        }, {
+          "$ref" : "#/parameters/paymentTypeListParam"
+        }, {
+          "$ref" : "#/parameters/pageNumberParam"
+        }, {
+          "$ref" : "#/parameters/pageSizeParam"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The operation was successful",
+            "schema" : {
+              "$ref" : "#/definitions/RepresentedPaymentsResponse"
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "schema" : {
+              "$ref" : "#/definitions/CommonException"
+            }
+          },
+          "500" : {
+            "description" : "Error in processing the request",
+            "schema" : {
+              "$ref" : "#/definitions/ProcessingException"
+            }
+          }
+        }
+      }
+    },
+    "/registerPaymentExtended" : {
+      "post" : {
+        "operationId" : "postRegisterPaymentExtended",
+        "description" : "Invoke paymentJsonExtended resource (ePayment)",
+        "tags" : [ "ePayment" ],
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/authorisationParam"
+        }, {
+          "name" : "Service-Cid",
+          "in" : "header",
+          "type" : "string",
+          "required" : true
+        }, {
+          "name" : "body",
+          "in" : "body",
+          "schema" : {
+            "$ref" : "#/definitions/RegisterPaymentRequest"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The operation was successful",
+            "schema" : {
+              "$ref" : "#/definitions/RegisterPaymentResponse"
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "schema" : {
+              "$ref" : "#/definitions/CommonException"
+            }
+          },
+          "500" : {
+            "description" : "Error in processing the request",
+            "schema" : {
+              "$ref" : "#/definitions/ProcessingException"
+            }
+          }
+        }
+      }
+    },
+    "/getClientsByEIK" : {
+      "get" : {
+        "operationId" : "getClientsByEIK",
+        "description" : "Invoke getClientsByEik resource (ePayment)",
+        "tags" : [ "ePayment" ],
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "$ref" : "#/parameters/authorisationParam"
+        }, {
+          "name" : "eik",
+          "in" : "query",
+          "type" : "string",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The operation was successful",
+            "schema" : {
+              "$ref" : "#/definitions/ClientsByEIKResponse"
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "schema" : {
+              "$ref" : "#/definitions/CommonException"
+            }
+          },
+          "500" : {
+            "description" : "Error in processing the request",
+            "schema" : {
+              "$ref" : "#/definitions/ProcessingException"
+            }
+          }
+        }
+      }
+    }
+  },
+  "parameters" : {
+    "pageNumberParam" : {
+      "in" : "query",
+      "name" : "pageNumber",
+      "required" : false,
+      "type" : "string",
+      "minimum" : 0,
+      "description" : "The page number from which to collect the result set"
+    },
+    "pageSizeParam" : {
+      "in" : "query",
+      "name" : "pageSize",
+      "required" : false,
+      "type" : "string",
+      "minimum" : 1,
+      "maximum" : 50,
+      "default" : 20,
+      "description" : "The number of items in page to return"
+    },
+    "messageDirectionParam" : {
+      "in" : "query",
+      "name" : "direction",
+      "required" : false,
+      "type" : "string",
+      "enum" : [ "SENT", "RECEIVED", "RECEIVED_NEW" ]
+    },
+    "paymentTypeParam" : {
+      "in" : "query",
+      "name" : "paymentType",
+      "required" : true,
+      "type" : "string",
+      "enum" : [ "PENDING", "PAID" ]
+    },
+    "paymentTypeListParam" : {
+        "in" : "query",
+        "name" : "paymentTypeList",
+        "required" : true,
+        "type" : "string",
+        "enum" : [ "PENDING","AUTHORIZED","ORDER","PAID","EXPIRED","CANCELED","SUSPENDED","INPROCESS" ]
+      },
+    "paymentStatParam" : {
+      "name" : "requestType",
+      "in" : "query",
+      "type" : "string",
+      "required" : true,
+      "enum" : [ "PAYMENTS", "REQUEST" ]
+    },
+    "originTypeParam" : {
+      "in" : "query",
+      "name" : "originSystem",
+      "required" : true,
+      "description" : "Available systems",
+      "type" : "string",
+      "enum" : [ "OAUTH", "INTEGRATION", "EDELIVERY", "EPAYMENT", "REGIX" ]
+    },
+    "authorisationParam" : {
+      "name" : "Dp-Miscinfo",
+      "in" : "header",
+      "type" : "string",
+      "required" : true
+    },
+    "serviceOIDParam" : {
+      "name" : "serviceOID",
+      "in" : "header",
+      "type" : "string",
+      "required" : false
+    },
+    "operatorIDParam" : {
+      "name" : "operatorUID",
+      "in" : "header",
+      "type" : "string",
+      "required" : false
+    },
+    "subjectIDParam" : {
+      "name" : "electronicId",
+      "in" : "query",
+      "type" : "string",
+      "required" : true
+    },
+    "personIDParam" : {
+      "name" : "personUID",
+      "in" : "query",
+      "type" : "string",
+      "required" : false
+    },
+    "startDateParam" : {
+      "name" : "startDate",
+      "in" : "query",
+      "type" : "string",
+      "required" : true,
+      "format" : "full-date"
+    },
+    "endDateParam" : {
+      "name" : "endDate",
+      "in" : "query",
+      "type" : "string",
+      "required" : true,
+      "format" : "full-date"
+    },
+    "monthParam" : {
+      "name" : "month",
+      "in" : "query",
+      "type" : "string",
+      "required" : true,
+      "format" : "date-fullyear\"-\"date-month"
+    }
+  },
+  "definitions" : {
+    "OriginSystem" : {
+      "title" : "OriginSystem",
+      "description" : "Available systems",
+      "type" : "string",
+      "enum" : [ "OAUTH", "INTEGRATION", "EDELIVERY", "EPAYMENT", "REGIX" ]
+    },
+    "CommonException" : {
+      "title" : "CommonException",
+      "type" : "object",
+      "properties" : {
+        "failureOrigin" : {
+          "$ref" : "#/definitions/OriginSystem"
+        },
+        "cause" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Cause"
+          }
+        }
+      }
+    },
+    "ProcessingException" : {
+      "title" : "ProcessingException",
+      "type" : "object",
+      "properties" : {
+        "failureOrigin" : {
+          "$ref" : "#/definitions/OriginSystem"
+        },
+        "cause" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Cause"
+          }
+        },
+        "retryAfter" : {
+          "description" : "An optional parameter that specifies the required time in seconds to wait between requests",
+          "type" : "integer",
+          "format" : "int32"
+        }
+      },
+      "required" : [ "retryAfter" ]
+    },
+    "Cause" : {
+      "title" : "Cause",
+      "type" : "object",
+      "properties" : {
+        "code" : {
+          "type" : "string"
+        },
+        "message" : {
+          "type" : "string"
+        }
+      },
+      "required" : [ "code", "message" ]
+    },
+    "CommonTypeUID" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "enum" : [ "EGN", "BULSTAT", "EIK", "OID" ]
+        },
+        "value" : {
+          "type" : "string"
+        }
+      }
+    },
+    "CommonTypeContacts" : {
+      "type" : "object",
+      "properties" : {
+        "phone" : {
+          "type" : "string"
+        },
+        "email" : {
+          "type" : "string"
+        },
+        "address" : {
+          "$ref" : "#/definitions/CommonTypeAddress"
+        }
+      }
+    },
+    "CommonTypeAddress" : {
+      "type" : "object",
+      "properties" : {
+        "country" : {
+          "type" : "string"
+        },
+        "city" : {
+          "type" : "string"
+        },
+        "state" : {
+          "type" : "string"
+        },
+        "zip" : {
+          "type" : "string"
+        },
+        "address" : {
+          "type" : "string"
+        }
+      }
+    },
+    "CommonTypeBankAccount" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "bank" : {
+          "type" : "string"
+        },
+        "bic" : {
+          "type" : "string"
+        },
+        "iban" : {
+          "type" : "string"
+        }
+      }
+    },
+    "CommonTypeInfo" : {
+      "type" : "object",
+      "properties" : {
+        "contacts" : {
+          "$ref" : "#/definitions/CommonTypeContacts"
+        },
+        "bankAccount" : {
+          "$ref" : "#/definitions/CommonTypeBankAccount"
+        }
+      }
+    },
+    "CommonTypeActor" : {
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "enum" : [ "PERSON", "LEGALPERSON", "STATEADMINISTRATION", "LICEPOCHL1AL2" ]
+        },
+        "uid" : {
+          "$ref" : "#/definitions/CommonTypeUID"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "info" : {
+          "$ref" : "#/definitions/CommonTypeInfo"
+        }
+      },
+      "required" : [ "type" ]
+    },
+    "PayerProfile" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/CommonTypeActor"
+      } ],
+      "type" : "object",
+      "required" : [ "participantType" ],
+      "properties" : {
+        "participantType" : {
+          "type" : "string",
+          "enum" : [ "APPLICANT", "PROVIDER" ]
+        }
+      }
+    },
+    "PaymentStatusType" : {
+      "type" : "string",
+      "enum" : [ "PENDING", "AUTHORIZED", "ORDERED", "PAID", "EXPIRED", "CANCELED", "SUSPENDED" ]
+    },
+    "PaymentData" : {
+      "type" : "object",
+      "required" : [ "amount", "referenceDate", "expirationDate" ],
+      "properties" : {
+        "paymentId" : {
+          "type" : "string"
+        },
+        "currency" : {
+          "type" : "string"
+        },
+        "amount" : {
+          "description" : "сума на задължението (десетичен разделител \".\", до 2 симвоlа след десетичния разделител, пр. \"2.33\")",
+          "type" : "string"
+        },
+        "status" : {
+          "$ref" : "#/definitions/PaymentStatusType"
+        },
+        "typeCode" : {
+          "type" : "string"
+        },
+        "referenceNumber" : {
+          "type" : "string"
+        },
+        "referenceType" : {
+          "type" : "string"
+        },
+        "referenceDate" : {
+          "description" : "дата на документ (референтен документ за плащане)",
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "expirationDate" : {
+          "description" : "дата на изтичане на заявката за плащане",
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "createDate" : {
+          "description" : "дата на създаване на заявката за плащане",
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "additionalInformation" : {
+          "type" : "string"
+        },
+        "reason" : {
+          "type" : "string"
+        }
+      }
+    },
+    "PaymentModel" : {
+      "type" : "object",
+      "properties" : {
+        "requestId" : {
+          "type" : "string"
+        },
+        "paymentData" : {
+          "$ref" : "#/definitions/PaymentData"
+        },
+        "providerInfo" : {
+          "$ref" : "#/definitions/CommonTypeInfo"
+        },
+        "eserviceAisName" : {
+          "type" : "string"
+        }
+      },
+      "example" : { }
+    },
+    "ChangePaymentStatusRequest" : {
+      "description" : "",
+      "type" : "object",
+      "properties" : {
+        "paymentId" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "PAID", "SUSPENDED" ]
+        },
+        "method" : {
+          "type" : "string",
+          "enum" : [ "CASH", "OTHER" ]
+        },
+        "description" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "paymentId" : "21061723",
+        "status" : "PAID",
+        "method" : "CASE",
+        "description" : "podrobnost"
+      }
+    },
+    "RegisterPaymentRequest" : {
+      "type" : "object",
+      "properties" : {
+        "actors" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PayerProfile"
+          }
+        },
+        "paymentData" : {
+          "$ref" : "#/definitions/PaymentData"
+        }
+      },
+      "example" : {
+        "actors" : [ {
+          "type" : "PERSON",
+          "uid" : {
+            "type" : "EGN",
+            "value" : "XXXXXXXXXX"
+          },
+          "name" : "Имена",
+          "participantType" : "APPLICANT"
+        }, {
+          "type" : "SATEADMINISTRATION",
+          "uid" : {
+            "type" : "BULSTAT",
+            "value" : "XXXXXXXXXXX"
+          },
+          "name" : "Наименование",
+          "info" : {
+            "bankAccount" : {
+              "name" : "Наименование",
+              "bank" : "ДСК",
+              "bic" : "STSABGSF",
+              "iban" : "BG80BNBG96611020345678"
+            }
+          },
+          "participantType" : "PROVIDER"
+        } ],
+        "paymentData" : {
+          "currency" : "BGN",
+          "amount" : "0.25",
+          "reason" : "основание",
+          "referenceType" : "1",
+          "referenceNumber" : "123459051",
+          "referenceDate" : "2021-11-12",
+          "expirationDate" : "2021-11-12"
+        }
+      }
+    },
+    "RegisterPaymentResponse" : {
+      "type" : "object",
+      "properties" : {
+        "paymentId" : {
+          "type" : "string"
+        },
+        "registrationTime" : {
+          "type" : "string"
+        },
+        "accessCode" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "paymentId" : "2201267",
+        "registrationTime" : "2022-01-26T14:38:52.5748289+02:00",
+        "accessCode" : "QC6S85482P"
+      }
+    },
+    "PaymentStatusResponse" : {
+      "type" : "object",
+      "properties" : {
+        "paymentId" : {
+          "type" : "string"
+        },
+        "status" : {
+          "$ref" : "#/definitions/PaymentStatusType"
+        },
+        "changeTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        }
+      },
+      "example" : {
+        "paymentId" : "2201267",
+        "status" : "PENDING",
+        "changeTime" : "2022-01-26T14:38:52.5748289"
+      }
+    },
+    "RepresentedPaymentsResponse" : {
+      "description" : "",
+      "type" : "object",
+      "properties" : {
+        "payments" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PaymentModel"
+          }
+        },
+        "count" : {
+            "type" : "string"
+          }
+      },
+      "example" : {
+        "payments" : [ {
+          "requestId" : 61368,
+          "paymentData" : {
+            "paymentId" : "2103164",
+            "amount" : "1.00",
+            "currency" : "BGN",
+            "status" : "CANCELED",
+            "referenceType" : "1",
+            "referenceNumber" : "123459001",
+            "referenceDate" : "2021-03-17T00:00:00",
+            "expirationDate" : "2021-03-17T00:00:00",
+            "createDate" : "2021-03-16T14:23:12.0517372",
+            "additionalInformation" : null,
+            "reason" : "tekst"
+          },
+          "providerInfo" : {
+            "bankAccount" : {
+              "name" : "naimenovanie",
+              "bank" : "???",
+              "bic" : "STSABGSF",
+              "iban" : "BG80BNBG96611020345678"
+            }
+          },
+          "eserviceAisName" : "Изпълнителна агенция \"Морска администрация\""
+        }, {
+          "requestId" : 61369,
+          "paymentData" : {
+            "paymentId" : "2103165",
+            "amount" : "1.00",
+            "currency" : "BGN",
+            "status" : "CANCELED",
+            "referenceType" : "1",
+            "referenceNumber" : "123459002",
+            "referenceDate" : "2021-03-17T00:00:00",
+            "expirationDate" : "2021-03-17T00:00:00",
+            "createDate" : "2021-03-16T14:52:56.8334353",
+            "additionalInformation" : null,
+            "reason" : "?????????"
+          },
+          "providerInfo" : {
+            "bankAccount" : {
+              "name" : "??????",
+              "bank" : "???",
+              "bic" : "STSABGSF",
+              "iban" : "BG80BNBG96611020345678"
+            }
+          },
+          "eserviceAisName" : "ESB_test_Client"
+        } ]
+      }
+    },
+    "ClientsByEIKResponse" : {
+      "type" : "object",
+      "properties" : {
+        "departement" : {
+          "$ref" : "#/definitions/CommonTypeActor"
+        },
+        "unites" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CommonTypeActorisActive"
+          }
+        }
+      }
+    },
+    "CommonTypeActorisActive" : {
+    	"allOf" : [ {
+             "$ref" : "#/definitions/CommonTypeActor"
+           } ],
+      "type" : "object",
+      "properties" : {
+        "isActive" : {
+          "type" : "boolean",
+          "default" : false
+        }
+      }
+    },
+    "AccessCodeResponse" : {
+      "type" : "object",
+      "properties" : {
+        "accessCode" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}

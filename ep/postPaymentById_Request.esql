@@ -1,0 +1,20 @@
+BROKER SCHEMA ep
+
+
+
+CREATE COMPUTE MODULE postPaymentById_Request
+	
+	DECLARE ePaymentBaseURL EXTERNAL CHARACTER '';
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		SET OutputLocalEnvironment.Variables=InputLocalEnvironment.Variables;
+		SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL || '/paymentsByIdJson';
+	
+		CREATE FIELD OutputRoot.JSON.Data.requestIds IDENTITY (JSON.Array)requestIds;
+		SET OutputRoot.JSON.Data.requestIds.Item[1] = InputLocalEnvironment.REST.Input.Parameters.paymentId;
+
+		RETURN TRUE;
+	END;
+END MODULE;

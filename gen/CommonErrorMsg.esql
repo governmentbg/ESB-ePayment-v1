@@ -1,0 +1,17 @@
+BROKER SCHEMA gen
+
+
+
+
+CREATE COMPUTE MODULE CommonErrorMsg
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputLocalEnvironment.Destination.HTTP.ReplyStatusCode = 500;
+		SET OutputRoot.JSON.Data.failureOrigin = 'INTEGRATION';
+	--	SET OutputRoot.JSON.Data.cause[1].code = InputRoot.SOAP.Body.ns:Fault.faultcode;
+		SET OutputRoot.JSON.Data.cause[1].message = 'Error';
+		RETURN TRUE;
+	END;
+
+	
+END MODULE;

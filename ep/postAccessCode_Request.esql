@@ -1,0 +1,23 @@
+BROKER SCHEMA ep
+
+
+CREATE COMPUTE MODULE postAccessCode_Request
+	DECLARE ePaymentBaseURL EXTERNAL CHARACTER '';		
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+	
+		SET OutputRoot = InputRoot;
+		SET OutputRoot.JSON.Data.id = InputLocalEnvironment.HTTP.Input.QueryString.paymentId;
+		
+		SET OutputLocalEnvironment.Variables=InputLocalEnvironment.Variables;
+		-- SET OutputLocalEnvironment.Variables.ePayment.eServiceClientID = null;
+			
+				
+		SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL || '/accessCode';
+		
+			
+
+		RETURN TRUE;
+	END;
+
+END MODULE;

@@ -1,0 +1,56 @@
+BROKER SCHEMA ep
+
+
+
+CREATE COMPUTE MODULE postPayment_Request
+	DECLARE ePaymentBaseURL EXTERNAL CHARACTER '';
+			
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+	DECLARE i INTEGER 1;
+	
+		SET OutputLocalEnvironment.Variables = InputLocalEnvironment.Variables;
+
+		--IF OutputLocalEnvironment.Variables.DpMiscinfo.correspondentOID IS NULL THEN
+			SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL || '/paymentJson';
+		--ELSE
+		--	SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL || '/paymentJsonExtended';
+		--END IF;
+
+		
+		FOR source AS InputRoot.JSON.Data.actors.*[] DO
+				CASE UPPER(InputRoot.JSON.Data.actors.*[i].participantType)
+		  		WHEN 'APPLICANT' THEN
+					SET OutputRoot.JSON.Data.applicantUinTypeId = InputRoot.JSON.Data.actors.*[i].uid.type; 
+					SET OutputRoot.JSON.Data.applicantUin = InputRoot.JSON.Data.actors.*[i].uid.value;
+					SET OutputRoot.JSON.Data.applicantName =InputRoot.JSON.Data.actors.*[i].name;
+				WHEN 'PROVIDER' THEN
+		--			IF OutputLocalEnvironment.Variables.DpMiscinfo.correspondentOID IS NULL THEN
+						SET OutputRoot.JSON.Data.serviceProviderName=InputRoot.JSON.Data.actors.*[i].info.bankAccount.name; 
+						SET OutputRoot.JSON.Data.serviceProviderBank=InputRoot.JSON.Data.actors.*[i].info.bankAccount.bank;
+						SET OutputRoot.JSON.Data.serviceProviderBIC=InputRoot.JSON.Data.actors.*[i].info.bankAccount.bic;
+						SET OutputRoot.JSON.Data.serviceProviderIBAN=InputRoot.JSON.Data.actors.*[i].info.bankAccount.iban;
+			--		END IF;
+				END CASE;
+				SET i=i+1;
+		END FOR;
+	
+		SET OutputRoot.JSON.Data.aisPaymentId = InputRoot.JSON.Data.paymentData.paymentId; 
+		SET OutputRoot.JSON.Data.currency = InputRoot.JSON.Data.paymentData.currency;
+		SET OutputRoot.JSON.Data.paymentAmount = InputRoot.JSON.Data.paymentData.amount;
+		SET OutputRoot.JSON.Data.typeCode = InputRoot.JSON.Data.paymentData.typeCode;
+		SET OutputRoot.JSON.Data.paymentReason = InputRoot.JSON.Data.paymentData.reason;
+		SET OutputRoot.JSON.Data.paymentReferenceNumber = InputRoot.JSON.Data.paymentData.referenceNumber;
+		SET OutputRoot.JSON.Data.paymentReferenceType = InputRoot.JSON.Data.paymentData.referenceType;
+		SET OutputRoot.JSON.Data.paymentReferenceDate = InputRoot.JSON.Data.paymentData.referenceDate;
+		SET OutputRoot.JSON.Data.expirationDate = InputRoot.JSON.Data.paymentData.expirationDate;
+		SET OutputRoot.JSON.Data.additionalInformation = InputRoot.JSON.Data.paymentData.additionalInformation;
+		SET OutputRoot.JSON.Data.administrativeServiceUri = InputRoot.JSON.Data.paymentData.administrativeServiceUri;
+		SET OutputRoot.JSON.Data.administrativeServiceSupplierUri = InputRoot.JSON.Data.paymentData.administrativeServiceSupplierUri;
+		SET OutputRoot.JSON.Data.administrativeServiceNotificationURL = InputRoot.JSON.Data.paymentData.administrativeServiceNotificationURL;
+		
+			
+		RETURN TRUE;
+	END;
+
+END MODULE;

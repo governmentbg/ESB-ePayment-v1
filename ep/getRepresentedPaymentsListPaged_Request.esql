@@ -1,0 +1,43 @@
+BROKER SCHEMA ep
+
+/*
+https://pay-test.egov.bg:44310/api/v1/eService/pendingPaymentStatusJson
+https://pay-test.egov.bg:44310/api/v1/eService/paymentStatusJson
+https://pay-test.egov.bg:44310/api/v1/eService/numberOfPaymentsByMonthJson
+https://pay-test.egov.bg:44310/api/v1/eService/numberOfPaymentsFromDateToDateJson
+*/
+
+CREATE COMPUTE MODULE getRepresentedPaymentsListPaged_Request
+	
+	DECLARE ePaymentBaseURL EXTERNAL CHARACTER '';
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+		BEGIN
+		
+		SET OutputLocalEnvironment.Variables=InputLocalEnvironment.Variables;
+		--SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL || '/paymentStatusJsonGrouped';
+			
+		CASE InputLocalEnvironment.REST.Input.Parameters.paymentType
+		  	WHEN 'PENDING' THEN
+				SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL || '/pendingPaymentStatusJson';
+			WHEN 'PAYMENT' THEN
+		    	SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL || '/paymentStatusJson';
+		END CASE;
+		
+		SET OutputRoot.JSON.Data.applicantUin = OutputLocalEnvironment.Variables.DpMiscinfo.representedPersonID;
+
+		IF InputLocalEnvironment.REST.Input.Parameters."pageNumber" IS NOT NULL THEN
+			SET OutputRoot.JSON.Data.pageNumber = InputLocalEnvironment.REST.Input.Parameters."pageNumber";
+		END IF;
+		
+		IF InputLocalEnvironment.REST.Input.Parameters."pageSize" IS NOT NULL THEN
+			SET OutputRoot.JSON.Data.pageSize = InputLocalEnvironment.REST.Input.Parameters."pageSize";	
+		ELSE
+			SET OutputRoot.JSON.Data.pageSize = 20;
+		END IF;
+
+		RETURN TRUE;
+		
+		END;
+
+END MODULE;

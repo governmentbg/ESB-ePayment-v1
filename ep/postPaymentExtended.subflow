@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCallableFlowInvoke.msgnode="ComIbmCallableFlowInvoke.msgnode" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmDatabaseRetrieve.msgnode="ComIbmDatabaseRetrieve.msgnode" xmlns:ComIbmRoute.msgnode="ComIbmRoute.msgnode" xmlns:ComIbmThrow.msgnode="ComIbmThrow.msgnode" xmlns:ComIbmTrace.msgnode="ComIbmTrace.msgnode" xmlns:ComIbmWSRequest.msgnode="ComIbmWSRequest.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="ep/postPaymentExtended.subflow" nsPrefix="ep_postPaymentExtended.subflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1" useDefaults="true" udpSupport="true">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <translation xmi:type="utility:TranslatableString" key="postPaymentExtended" bundleName="ep/postPaymentExtended" pluginId="DAEU_ePayment"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/DAEU_ePayment/icons/full/obj16/postPaymentExtended.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/DAEU_ePayment/icons/full/obj30/postPaymentExtended.gif"/>
+    <composition>
+      <nodes xmi:type="ComIbmWSRequest.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="749,147" URLSpecifier="https://pay-test.egov.bg" timeoutForServer="10" httpVersion="1.1" protocol="TLS" messageDomainProperty="JSON" requestMsgLocationInTree="InputRoot.Request">
+        <translation xmi:type="utility:ConstantString" string="Call EPayment"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output_1" location="1422,139">
+        <translation xmi:type="utility:TranslatableString" key="Output" bundleName="ep/postPaymentExtended" pluginId="DAEU_ePayment"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input_1" location="-95,127">
+        <translation xmi:type="utility:TranslatableString" key="Input" bundleName="ep/postPaymentExtended" pluginId="DAEU_ePayment"/>
+      </nodes>
+      <nodes xmi:type="ComIbmTrace.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_4" location="962,24" destination="file" filePath="/var/mqsi/common/log/integration/DAEU_ePayment.log" pattern="---------------------------------------------------------------------------------------------------------------------------&#xD;&#xA;${CURRENT_TIMESTAMP} | INFO | ${MessageFlowLabel} | Exception Message&#xD;&#xA;ID: ${ProcessId}&#xD;&#xA;EXCEPTIONS: ${ExceptionList}">
+        <translation xmi:type="utility:ConstantString" string="Log Exeptions"/>
+      </nodes>
+      <nodes xmi:type="ComIbmThrow.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_7" location="1210,6" messageText="Something went wrong while attempting to get the payment status. Please check the trace log.">
+        <translation xmi:type="utility:ConstantString" string="Throw"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_6" location="1079,202" computeExpression="esql://routine/gen#EPayment_RESTFault.Main" computeMode="destinationAndMessage">
+        <translation xmi:type="utility:ConstantString" string="ComputeFault"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_9" location="125,133" computeExpression="esql://routine/ep#postPaymentExtended_Request.Main" computeMode="destinationAndMessage">
+        <translation xmi:type="utility:ConstantString" string="postPaymentEtendedRequest"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="962,312" computeExpression="esql://routine/gen#KeyNotFound_DBError.Main" computeMode="destinationAndMessage">
+        <translation xmi:type="utility:ConstantString" string="SecretKey Not Found"/>
+      </nodes>
+      <nodes xmi:type="ComIbmDatabaseRetrieve.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_11" location="265,140" dataSourceName="{DB2Policy_HostsMap}:DB2_LINUX" copyMessage="true" sqlQuery="SELECT CONFIG.UID_TYPE.EPAYMENT&#xA;FROM CONFIG.UID_TYPE&#xA;WHERE CONFIG.UID_TYPE.ID = ?&#xA;ORDER BY CONFIG.UID_TYPE.EPAYMENT ASC" tableNameComboValues="2,2,0,0,0,0~CONFIG.EPAY_OID_MAP,CONFIG.EPAYMENT,CONFIG.UID_TYPE" columnNameComboValues="2,1,0,0,0,0~CLIENT_ID,EPAYMENT,ID,SECRET_KEY,SYSTEM_OID" operatorComboValues="2,0,0,0,0,0~="
+          valueTypeComboValues="2,0,0,0,0,0,0~Element" columnValueComboValues="1,0~CONFIG.UID_TYPE.EPAYMENT">
+        <translation xmi:type="utility:ConstantString" string="DBGet_applicantUidType"/>
+        <queryElements tableName="CONFIG.UID_TYPE" columnName="ID" operator="=" valueType="Element" value="$Root/JSON/Data/applicantUinTypeId"/>
+        <queryElements tableName="CONFIG.UID_TYPE" columnName="EPAYMENT" operator="ASC" valueType="None" value="None"/>
+        <dataElements columnName="CONFIG.UID_TYPE.EPAYMENT" messageElement="$OutputRoot/JSON/Data/applicantUinTypeId"/>
+      </nodes>
+      <nodes xmi:type="ComIbmTrace.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_8" location="608,142" destination="file" filePath="/var/mqsi/common/log/integration/DAEU_ePayment.log" pattern="---------------------------------------------------------------------------------------------------------------------------&#xD;&#xA;${CURRENT_TIMESTAMP} | INFO | ${MessageFlowLabel} | Outbound Message&#xD;&#xA;ID: ${ProcessId}&#xD;&#xA;LOCAL ENVIRONMENT: ${LocalEnvironment}      &#xD;&#xA;ROOT: ${Root}">
+        <translation xmi:type="utility:ConstantString" string="Log Outbound"/>
+      </nodes>
+      <nodes xmi:type="ComIbmTrace.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_16" location="1340,112" destination="file" filePath="/var/mqsi/common/log/integration/DAEU_ePayment.log" pattern="---------------------------------------------------------------------------------------------------------------------------&#xD;&#xA;${CURRENT_TIMESTAMP} | INFO | ${MessageFlowLabel} | Inbound Message&#xD;&#xA;ID: ${ProcessId}&#xD;&#xA;ROOT: ${Root}">
+        <translation xmi:type="utility:ConstantString" string="Log Inbound"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCallableFlowInvoke.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_12" location="19,128" targetApplication="CF_ePayment" targetEndpointName="epConfig">
+        <translation xmi:type="utility:ConstantString" string="epConfig"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCallableFlowInvoke.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_17" location="445,141" targetApplication="CF_ePayment" targetEndpointName="generateFormData">
+        <translation xmi:type="utility:ConstantString" string="generateFormData"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="1024,99" computeExpression="esql://routine/ep#postPaymentExtended_Response.Main">
+        <translation xmi:type="utility:ConstantString" string="postPaymentEtendedPersponse"/>
+      </nodes>
+      <nodes xmi:type="ComIbmRoute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_5" location="897,146">
+        <outTerminals terminalNodeID="Match" dynamic="true" label="Match"/>
+        <translation xmi:type="utility:ConstantString" string="Route"/>
+        <filterTable filterPattern="$Root/JSON/Data/acceptedReceiptJson/id>0" routingOutputTerminal="Match"/>
+        <nsMappingTable nsPrefix="tns" namespace="http://schemas.microsoft.com/2003/10/Serialization/"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_5" targetNode="FCMComposite_1_7" sourceNode="FCMComposite_1_4" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_10" targetNode="FCMComposite_1_4" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_7" targetNode="FCMComposite_1_6" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.error" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_17" targetNode="FCMComposite_1_3" sourceNode="FCMComposite_1_11" sourceTerminalName="OutTerminal.keyNotFound" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_18" targetNode="FCMComposite_1_4" sourceNode="FCMComposite_1_11" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_9" targetNode="FCMComposite_1_1" sourceNode="FCMComposite_1_8" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_24" targetNode="FCMComposite_1_16" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_25" targetNode="FCMComposite_1_16" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_26" targetNode="OutTerminal.Output_1" sourceNode="FCMComposite_1_16" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_11" sourceNode="FCMComposite_1_9" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_12" sourceNode="InTerminal.Input_1" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="FCMComposite_1_9" sourceNode="FCMComposite_1_12" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_11" targetNode="FCMComposite_1_4" sourceNode="FCMComposite_1_12" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_13" targetNode="FCMComposite_1_17" sourceNode="FCMComposite_1_11" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_14" targetNode="FCMComposite_1_8" sourceNode="FCMComposite_1_17" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_15" targetNode="FCMComposite_1_4" sourceNode="FCMComposite_1_17" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_6" targetNode="FCMComposite_1_16" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="FCMComposite_1_5" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_8" targetNode="FCMComposite_1_6" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.default" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_12" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_5" sourceTerminalName="Match" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_16" targetNode="FCMComposite_1_4" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.in"/>
+    </composition>
+    <propertyOrganizer/>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>

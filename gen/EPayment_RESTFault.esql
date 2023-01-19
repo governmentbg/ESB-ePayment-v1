@@ -1,0 +1,44 @@
+BROKER SCHEMA gen
+
+
+
+CREATE COMPUTE MODULE EPayment_RESTFault
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		DECLARE i INTEGER 1;
+		-- SET OutputRoot=InputRoot;
+		
+		SET OutputLocalEnvironment.Destination.HTTP.ReplyStatusCode = 400;
+		
+		SET OutputRoot.JSON.Data.failureOrigin = 'EPAYMENT';
+		
+		IF InputRoot.HTTPResponseHeader."X-Original-HTTP-Status-Code" = 200 THEN
+			
+			FOR source AS InputRoot.JSON.Data.unacceptedReceiptJson.errors.*[] DO
+				--SET OutputRoot.JSON.Data.cause[i].code = ;
+				SET OutputRoot.JSON.Data.cause[i].message = InputRoot.JSON.Data.unacceptedReceiptJson.errors.Item[i];
+				SET i=i+1;
+			END FOR;
+		ELSE
+			CREATE LASTCHILD OF InputRoot DOMAIN('JSON') PARSE(InputRoot.BLOB.BLOB);  
+			
+			SET OutputRoot.JSON.Data.cause[1].code = InputRoot.HTTPResponseHeader."X-Original-HTTP-Status-Code";
+			SET OutputRoot.JSON.Data.cause[1].message = InputRoot.JSON.Data.message;
+			
+		END IF;
+		
+		/*
+		HTTPResponseHeader
+	X-Original-HTTP-Status-Line:CHARACTER:HTTP/1.1 500 Internal Server Error
+	X-Original-HTTP-Status-Code:INTEGER:500
+		unacceptedReceiptJson": {
+        "validationTime": "2022-04-21T16:26:50.9627583+03:00",
+        "errors": [
+            "Already exist valid payment request with the same values for 'ElectronicServiceProviderBankAccount.IBAN', 'PaymentReference.PaymentReferenceNumber' and 'PaymentReference.PaymentReferenceDate'."
+        ]
+    },
+    "acceptedReceiptJson": null
+    */
+		RETURN TRUE;
+	END;
+END MODULE;

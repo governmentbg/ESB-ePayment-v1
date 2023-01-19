@@ -1,0 +1,31 @@
+BROKER SCHEMA ep
+
+
+
+CREATE COMPUTE MODULE postPaymentExtended_Response
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+
+		IF InputRoot.JSON.Data.acceptedReceiptJson.id IS NOT NULL THEN
+			SET OutputRoot.JSON.Data.paymentId = InputRoot.JSON.Data.acceptedReceiptJson.id;
+		ELSE
+			SET OutputRoot.JSON.Data.paymentId = Environment.PaymentData.acceptedReceiptJson.id;
+		END IF;
+		
+		IF InputRoot.JSON.Data.acceptedReceiptJson.registrationTime IS NOT NULL THEN
+			SET OutputRoot.JSON.Data.registrationTime = InputRoot.JSON.Data.acceptedReceiptJson.registrationTime;
+		ELSE
+			SET OutputRoot.JSON.Data.registrationTime = Environment.PaymentData.acceptedReceiptJson.registrationTime;
+		END IF;
+		
+		IF InputRoot.JSON.Data.acceptedReceiptJson.accessCode IS NOT NULL THEN	
+			SET OutputRoot.JSON.Data.accessCode = InputRoot.JSON.Data.acceptedReceiptJson.accessCode; 
+		ELSE
+			SET OutputRoot.JSON.Data.accessCode = 'ERROR';
+		END IF;
+		RETURN TRUE;
+	END;
+
+
+END MODULE;

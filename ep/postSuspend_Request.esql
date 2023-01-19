@@ -1,0 +1,17 @@
+BROKER SCHEMA ep
+
+
+CREATE COMPUTE MODULE postSuspend_Request
+	DECLARE ePaymentBaseURL EXTERNAL CHARACTER '';
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputLocalEnvironment.Variables=InputLocalEnvironment.Variables;
+		
+		SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL||'/suspendRequest';
+		
+		SET OutputRoot.JSON.Data.id = InputRoot.JSON.Data.paymentId;
+		RETURN TRUE;
+	END;
+
+END MODULE;

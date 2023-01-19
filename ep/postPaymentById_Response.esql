@@ -1,0 +1,63 @@
+BROKER SCHEMA ep
+
+
+CREATE COMPUTE MODULE postPaymentById_Response
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+
+		DECLARE data REFERENCE TO InputRoot.JSON.Data.paymentRequests.Item[1];
+
+		CREATE FIELD OutputRoot.JSON.Data.actors IDENTITY(JSON.Array)actors;		
+		  
+		  		SET OutputRoot.JSON.Data.actors.Item[1].participantType = 'APPLICANT';
+				SET OutputRoot.JSON.Data.actors.Item[1].uid.type = data.requestJson.applicantUinTypeId; 
+				SET OutputRoot.JSON.Data.actors.Item[1].uid.value = data.requestJson.applicantUin;
+				SET OutputRoot.JSON.Data.actors.Item[1].name = data.requestJson.applicantName;
+				
+				SET OutputRoot.JSON.Data.actors.Item[2].participantType = 'PROVIDER';
+		    	SET OutputRoot.JSON.Data.actors.Item[2].info.bankAccount.name = data.requestJson.serviceProviderName; 
+				SET OutputRoot.JSON.Data.actors.Item[2].info.bankAccount.bank = data.requestJson.serviceProviderBank;
+				SET OutputRoot.JSON.Data.actors.Item[2].info.bankAccount.bic = data.requestJson.serviceProviderBIC;
+				SET OutputRoot.JSON.Data.actors.Item[2].info.bankAccount.iban = data.requestJson.serviceProviderIBAN;
+
+			/*	
+		SET OutputRoot.JSON.Data.paymentId = data.id;
+		SET OutputRoot.JSON.Data.status = UPPER(data.status);
+		SET OutputRoot.JSON.Data.changeTime = data.changeTime;
+		RETURN TRUE;
+		---
+		FOR source AS InputRoot.JSON.Data.actors.*[] DO
+				CASE UPPER(InputRoot.JSON.Data.actors.*[i].participantType)
+		  		WHEN 'APPLICANT' THEN
+					SET OutputRoot.JSON.Data.applicantUinTypeId = InputRoot.JSON.Data.actors.*[i].uid.type; 
+					SET OutputRoot.JSON.Data.applicantUin = InputRoot.JSON.Data.actors.*[i].uid.value;
+					SET OutputRoot.JSON.Data.applicantName =InputRoot.JSON.Data.actors.*[i].name;
+				WHEN 'PROVIDER' THEN
+		    		SET OutputRoot.JSON.Data.serviceProviderName=InputRoot.JSON.Data.actors.*[i].info.bankAccount.name; 
+					SET OutputRoot.JSON.Data.serviceProviderBank=InputRoot.JSON.Data.actors.*[i].info.bankAccount.bank;
+					SET OutputRoot.JSON.Data.serviceProviderBIC=InputRoot.JSON.Data.actors.*[i].info.bankAccount.bic;
+					SET OutputRoot.JSON.Data.serviceProviderIBAN=InputRoot.JSON.Data.actors.*[i].info.bankAccount.iban;
+				END CASE;
+				SET i=i+1;
+		END FOR;
+	*/
+		SET OutputRoot.JSON.Data.paymentData.aisPaymentId = data.requestJson.aisPaymentId; 
+		SET OutputRoot.JSON.Data.paymentData.currency = data.requestJson.currency;
+		DECLARE pattern CHARACTER '#,##0.00;(#,##0.00)';
+
+		SET OutputRoot.JSON.Data.paymentData.amount = CAST(data.requestJson.paymentAmount AS CHARACTER FORMAT pattern);
+		SET OutputRoot.JSON.Data.paymentData.typeCode = data.requestJson.typeCode;
+		SET OutputRoot.JSON.Data.paymentData.reason = data.requestJson.paymentReason;
+		SET OutputRoot.JSON.Data.paymentData.referenceNumber = data.requestJson.paymentReferenceNumber;
+		SET OutputRoot.JSON.Data.paymentData.referenceType = data.requestJson.paymentReferenceType;
+		
+	--	DECLARE pattern CHARACTER 'dd-MM-yy';
+	--	SET OutputRoot.JSON.Data.qData.referenceDate = CAST(data.requestJson.paymentReferenceDate AS DATE FORMAT pattern);
+	--	SET OutputRoot.JSON.Data.qData.expirationDate = CAST(data.requestJson.expirationDate AS DATE FORMAT pattern);
+		SET OutputRoot.JSON.Data.paymentData.additionalInformation = data.requestJson.additionalInformation;
+		--SET OutputRoot.JSON.Data.paymentData.administrativeServiceUri = data.requestJson.administrativeServiceUri;
+		--SET OutputRoot.JSON.Data.paymentData.administrativeServiceSupplierUri = data.requestJson.administrativeServiceSupplierUri;
+		--SET OutputRoot.JSON.Data.paymentData.administrativeServiceNotificationURL = data.requestJson.administrativeServiceNotificationURL;
+	END;
+END MODULE;

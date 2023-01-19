@@ -1,0 +1,97 @@
+BROKER SCHEMA ep
+
+
+/*
+https://pay-test.egov.bg:44310/api/v1/eService/pendingPaymentStatusJson
+https://pay-test.egov.bg:44310/api/v1/eService/paymentStatusJson
+https://pay-test.egov.bg:44310/api/v1/eService/numberOfPaymentsByMonthJson
+https://pay-test.egov.bg:44310/api/v1/eService/numberOfPaymentsFromDateToDateJson
+*/
+
+CREATE COMPUTE MODULE TEST_Request
+	
+	DECLARE ePaymentBaseURL EXTERNAL CHARACTER '';
+	DECLARE i INTEGER 1;
+	DECLARE statEnum CHARACTER '';
+	DECLARE statCode CHARACTER '';
+	DECLARE reststatuses CHARACTER '';
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+		BEGIN
+		
+		SET OutputLocalEnvironment.Variables=InputLocalEnvironment.Variables;
+		SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL || '/paymentStatusJsonGrouped';
+	/*		
+		CASE InputLocalEnvironment.REST.Input.Parameters.paymentType
+		  	WHEN 'PENDING' THEN
+				SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL || '/pendingPaymentStatusJson';
+			WHEN 'PAYMENT' THEN
+		    	SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL || '/paymentStatusJson';
+		END CASE;
+		*/
+		--'{"paymentStatuses":["9","1"],"applicantUin": "545","pageNumber":1,"pageSize":20}'
+		
+		SET OutputRoot.JSON.Data.applicantUin = OutputLocalEnvironment.Variables.DpMiscinfo.representedPersonID;
+		--OutputRoot.JSON.Data.(JSON.Array)computers.Item.(JSON.Array)desktops.Item[1].brand='asus'
+		
+		--SET OutputRoot.JSON.Data.(JSON.Array)paymentStatuses.Item[1] = 5; 
+		--SET OutputRoot.JSON.Data.(JSON.Array)paymentStatuses.Item[2] = 9; 
+		
+		--SET status = InputLocalEnvironment.REST.Input.Parameters."paymentTypeListParam";
+		
+		SET reststatuses = InputLocalEnvironment.REST.Input.Parameters."paymentTypeList"||',';
+		
+		WHILE LENGTH(reststatuses)>0
+		DO
+		
+			SET statEnum = SUBSTRING(reststatuses BEFORE ',');
+			
+			CALL ConvertPaymentStatus( TRIM(statEnum) , statCode);
+			
+			SET OutputRoot.JSON.Data.(JSON.Array)paymentStatuses.Item[i] = TRIM(statCode);
+			SET reststatuses = SUBSTRING(InputLocalEnvironment.REST.Input.Parameters."paymentTypeList"||',' AFTER statEnum||',');
+			
+			SET i=i+1;
+
+		END WHILE;
+		IF InputLocalEnvironment.REST.Input.Parameters."pageNumber" IS NOT NULL THEN
+			SET OutputRoot.JSON.Data.pageNumber = InputLocalEnvironment.REST.Input.Parameters."pageNumber";
+		END IF;
+		
+		IF InputLocalEnvironment.REST.Input.Parameters."pageSize" IS NOT NULL THEN
+			SET OutputRoot.JSON.Data.pageSize = InputLocalEnvironment.REST.Input.Parameters."pageSize";	
+		ELSE
+			SET OutputRoot.JSON.Data.pageSize = 20;
+		END IF;
+
+		RETURN TRUE;
+		
+		END;
+		
+		CREATE PROCEDURE ConvertPaymentStatus (IN statEnumP CHARACTER, OUT statCodeP CHARACTER) 
+		 BEGIN
+	
+			CASE statEnumP
+		
+			WHEN 'PENDING' THEN 
+				SET statCodeP = '1';
+			WHEN 'AUTHORIZED' THEN 
+				SET statCodeP = '2';
+			WHEN 'ORDERED' THEN 
+				SET statCodeP = '3';
+			WHEN 'PAID' THEN 
+				SET statCodeP = '4';
+			WHEN 'EXPIRED' THEN 
+				SET statCodeP = '5';
+			WHEN 'CANCELED' THEN 
+				SET statCodeP = '6';
+			WHEN 'SUSPENDED' THEN 
+				SET statCodeP = '7';
+			WHEN 'INPROCESS' THEN 
+				SET statCodeP = '9';
+			ELSE
+				SET statCodeP = '0';
+			END CASE;
+	
+	END;
+
+END MODULE;

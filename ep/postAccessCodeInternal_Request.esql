@@ -1,0 +1,27 @@
+BROKER SCHEMA ep
+
+
+
+CREATE COMPUTE MODULE postAccessCodeInternal_Request
+	DECLARE ePaymentBaseURL EXTERNAL CHARACTER '';		
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+	
+		SET Environment.PaymentData = InputRoot.JSON.Data;
+		
+		--SET OutputLocalEnvironment.Variables = InputLocalEnvironment.Variables ; 
+		SET OutputLocalEnvironment.Variables.ePayment.client_id = InputLocalEnvironment.Variables.ePayment.client_id;
+		 SET OutputLocalEnvironment.Variables.ePayment.secret_key = InputLocalEnvironment.Variables.ePayment.secret_key;
+		 SET OutputLocalEnvironment.Variables.ePayment.eServiceClientID = InputLocalEnvironment.Variables.ePayment.eServiceClientID;
+		
+		SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL || '/accessCode';
+		
+	--	SET OutputLocalEnvironment.Variables.ePayment.eServiceClientID = InputLocalEnvironment.Variables.ePayment.eServiceClientID;
+
+	--	SET OutputRoot.HTTPRequestHeader."Dp-Miscinfo" = InputLocalEnvironment.Variables.DpMiscinfo.headerValue;
+		
+		SET OutputRoot.JSON.Data.id = InputRoot.JSON.Data.acceptedReceiptJson.id;
+		RETURN TRUE;
+	END;
+
+END MODULE;

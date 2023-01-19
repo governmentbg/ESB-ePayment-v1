@@ -1,0 +1,24 @@
+BROKER SCHEMA ep
+
+
+
+CREATE COMPUTE MODULE postPaymentsStatus_Response
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		DECLARE data REFERENCE TO InputRoot.JSON.Data.paymentStatuses.Item[1];
+		SET OutputRoot.JSON.Data.paymentId = data.id;
+		SET OutputRoot.JSON.Data.status = UPPER(data.status);
+		SET OutputRoot.JSON.Data.changeTime = data.changeTime;
+		RETURN TRUE;
+	END;
+END MODULE;
+
+/*
+PENDING (Очаква плащане), 
+AUTHORIZED (Получена е авторизация от виртуалния ПОС терминал), 
+ORDERED” (Плащането е наредено), 
+PAID” (Плащането е получено по сметката на доставчика), 
+EXPIRED” (Заявката за плащане е изтекла), 
+CANCELED” (Заявката за плащане е отказана от потребителя), 
+SUSPENDED” (Заявката за плащане е отказана от АИС)
+*/

@@ -1,0 +1,70 @@
+BROKER SCHEMA ep
+
+
+CREATE COMPUTE MODULE getClientByEIK_Request
+		
+	DECLARE ePaymentBaseURL EXTERNAL CHARACTER '';
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		SET OutputRoot = InputRoot;
+		SET OutputLocalEnvironment.Variables=InputLocalEnvironment.Variables;
+		SET OutputLocalEnvironment.Destination.HTTP.RequestURL = ePaymentBaseURL || '/getClientsByEIK';
+		
+		SET OutputRoot.JSON.Data.eik = InputLocalEnvironment.HTTP.Input.QueryString.eik;
+	
+	--v1	
+	-- CREATE NEXTSIBLING OF OutputRoot.Parameters DOMAIN('JSON') ;
+	-- CREATE FIELD OutputRoot.JSON.Data DOMAIN('JSON') ;
+	-- CREATE FIELD OutputRoot.JSON.Data.eik IDENTITY(JSON.Array)eik;
+	
+	--SET OutputRoot.JSON.Data.eik[1] = '831604711';
+	--SET OutputRoot.JSON.Data.eik[2] = '831604711';
+	/*
+SET OutputRoot.JSON.Data.Item[1].Num1 = 1;
+SET OutputRoot.JSON.Data.Item[2].Nam2 = 'val2';
+SET OutputRoot.JSON.Data.Item[2].Num2 = 2;
+	CREATE FIELD OutputRoot.JSON.Data
+		CREATE FIELD OutputRoot.JSON.Data.eik IDENTITY(JSON.Array)eik;
+		SET OutputRoot.JSON.Data.eik[1] = '831604711';
+		SET OutputRoot.JSON.Data.eik[2] = '831604711';
+		*/	--v2 - не	
+	--	CREATE FIELD OutputRoot.JSON.Data IDENTITY(JSON.Array)Data;
+	--	SET OutputRoot.JSON.Data[1].eik = '831604711';
+	--	SET OutputRoot.JSON.Data[2].eik = '831604711';
+	--v3	
+	--	CREATE LASTCHILD OF OutputRoot.JSON.Data TYPE NameValue NAME 'eik' VALUE '831604711';
+
+		
+		-- CREATE LASTCHILD OF OutputRoot.JSON.Data IDENTITY(JSON.Array)eik;
+		
+		
+		
+		
+		
+	--	CREATE LASTCHILD OF OutputRoot.JSON.Data TYPE NameValue NAME 'eik' VALUE '831604711';
+		-- CREATE FIELD OutputRoot.JSON.Data.eik VALUE '831604711';
+		
+		--SET OutputRoot.JSON.Data.eik[1] = '831604711';
+
+
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;
+
+
